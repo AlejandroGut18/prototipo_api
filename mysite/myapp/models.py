@@ -1,10 +1,11 @@
 from django.db import models
+from django.utils import timezone
 
 # Create your models here.
 class Status(models.Model):
     id = models.AutoField(primary_key=True)
     nombre = models.CharField(default='activo', max_length=20, null=False, blank=False)
-    descripcion = models.CharField(default='activo por defecto', max_length=100, null=False, blank=False)
+    descripcion = models.CharField(default='activo por defecto', max_length=150, null=False, blank=False)
     
     class Meta():
         db_table = 'status'
@@ -27,7 +28,7 @@ class Usuario(models.Model):
     id = models.AutoField(primary_key=True)
     cedula = models.CharField(max_length=15, null=False, blank=False)
     nombre_usuario = models.CharField(max_length=100, null=False, blank=False)
-    password = models.CharField(max_length=100, null=False, blank=False)
+    password = models.CharField(max_length=300, null=False, blank=False)
     correo = models.EmailField(null=False, blank=False)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_ultima_sesion = models.DateTimeField(auto_now_add=True)
@@ -45,7 +46,7 @@ class Torneo(models.Model):
     nombre = models.CharField(max_length=100, null=False, blank=False)
     fecha_inicio = models.DateField(auto_now=False) 
     fecha_fin = models.DateField(null=True, blank=True)
-    ubicacion = models.CharField(max_length=200, null=False, blank=False)
+    ubicacion = models.CharField(max_length=300, null=False, blank=False)
     status_id = models.ForeignKey('Status', on_delete=models.CASCADE, db_column='status_id')
     
     class Meta():
@@ -67,7 +68,8 @@ class Grupo(models.Model):
     
     def __str__(self):
         return f"{self.nombre}"
-
+    
+'''
 class Grupo_equipo(models.Model):
     id = models.AutoField(primary_key=True)
     grupo_equipo_id = models.ForeignKey('Grupo', on_delete=models.CASCADE, db_column='grupo_equipo_id')
@@ -78,13 +80,14 @@ class Grupo_equipo(models.Model):
     
     def __str__(self):
         return f"{self.grupo_equipo_id}"
+'''
 
 class Equipo(models.Model):
     id = models.AutoField(primary_key=True)
     nombre = models.CharField(max_length=100, null=False, blank=False)
     delegado_equipo = models.ForeignKey("Usuario", on_delete=models.CASCADE, db_column='delegado_equipo')
-    # estadisticas_equipo_id = models.ForeignKey("Estadisticas", on_delete=models.CASCADE, db_column='estadisticas_equipo_id')
-    grupo_id = models.ForeignKey('Grupo_equipo', on_delete=models.CASCADE, db_column='grupo_id')
+    #estadisticas_equipo_id = models.ForeignKey("Estadisticas", on_delete=models.CASCADE, db_column='estadisticas_equipo_id')
+    grupo_id = models.ForeignKey('Grupo', on_delete=models.CASCADE, db_column='grupo_id')
     status_id = models.ForeignKey('Status', on_delete=models.CASCADE, db_column='status_id')
     
     #logo = models.ImageField(upload_to='logos/', null=False, blank=False)
@@ -93,7 +96,7 @@ class Equipo(models.Model):
         db_table = 'equipo'
     
     def __str__(self):
-        return f"{self.nombre_equipo}"
+        return f"{self.nombre}"
     
 class Estadisticas_equipo(models.Model):
     id = models.AutoField(primary_key=True)
@@ -130,6 +133,7 @@ class Jugador(models.Model):
     equipo_id = models.ForeignKey('Equipo', on_delete=models.CASCADE, db_column='equipo_id')
     status_id = models.ForeignKey('Status_jugador', on_delete=models.CASCADE, db_column='status_id')
     genero = models.CharField(max_length=1, null=False, blank=False)
+    #estadisticas_id = models.ForeignKey('Estadisticas_Jugador', on_delete=models.CASCADE, db_column='estadisticas_id')
     
     class Meta():
         db_table = 'jugador'
@@ -166,7 +170,8 @@ class Partido(models.Model):
         return f"{self.id}"
     
 class Estadisticas_Jugador(models.Model):
-    id = models.AutoField(primary_key=True)
+    id = models.AutoField(primary_key=True )
+    fecha = models.DateTimeField(auto_now_add=True)
     torneo_id = models.ForeignKey("Torneo", on_delete=models.CASCADE, db_column='torneo_id')  
     #grupo_id = models.ForeignKey('Grupo', on_delete=models.CASCADE, db_column='grupo_id')
     equipo_id = models.ForeignKey("Equipo", on_delete=models.CASCADE, db_column='equipo_id')
@@ -187,6 +192,8 @@ class Estadisticas_Jugador(models.Model):
         
     def __str__(self):
         return f"{self.id}"
+    
+
     
     
     

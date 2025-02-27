@@ -19,6 +19,7 @@ class UsuarioSerializer(serializers.ModelSerializer):
             'fecha_creacion', 'fecha_ultima_sesion', 'status_id', 'rol_id'
         ]
         
+                
 class TorneoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Torneo
@@ -43,6 +44,7 @@ class GrupoSerializer(serializers.ModelSerializer):
             'torneo_id'
         ]
         
+'''        
 class GrupoEquipoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Grupo_equipo
@@ -51,7 +53,8 @@ class GrupoEquipoSerializer(serializers.ModelSerializer):
             'grupo_equipo_id', 
             'equipo_grupo_id'
         ]
-        
+'''     
+   
 class EquipoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Equipo
@@ -96,7 +99,8 @@ class JugadorSerializer(serializers.ModelSerializer):
             'telefono', 
             'equipo_id', 
             'status_id', 
-            'genero'
+            'genero',
+            #'estadisticas_id'
         ]
         
 class JugadorEquipoSerializer(serializers.ModelSerializer):
@@ -127,6 +131,7 @@ class EstadisticasJugadorSerializer(serializers.ModelSerializer):
         model = Estadisticas_Jugador
         fields = [
             'id', 
+            'fecha',
             'torneo_id', 
             'equipo_id', 
             'partido_id', 

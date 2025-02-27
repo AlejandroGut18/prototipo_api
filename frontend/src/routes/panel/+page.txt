@@ -1,0 +1,148 @@
+<script lang="ts">
+	export let data;
+	const { torneos, grupos, jugadores } = data;
+    export let form;
+	import { enhance } from '$app/forms';
+
+	// Define el tipo Jugador
+	type Jugador = {
+		cedula: string;
+		nombre: string;
+		apellido: string;
+		fecha_nacimiento: string;
+		correo: string;
+		telefono: string;
+		equipo_id: number;
+		status_id: number;
+		genero: string;
+	};
+
+	// Estado inicial del formulario
+	let jugador: Jugador = {
+		cedula: '',
+		nombre: '',
+		apellido: '',
+		fecha_nacimiento: '',
+		correo: '',
+		telefono: '',
+		equipo_id: 1,
+		status_id: 1,
+		genero: 'M'
+	};
+</script>
+
+<h1>Torneos</h1>
+<ul>
+	{#each torneos as torneo}
+		<li>{torneo.nombre} - {torneo.ubicacion}</li>
+	{/each}
+</ul>
+
+<h1>Grupos</h1>
+<ul>
+	{#each grupos as grupo}
+		<li>
+			<strong>{grupo.nombre}</strong><br />
+			ID: {grupo.id}<br />
+			Fecha de Inicio: {grupo.fecha_inicio}<br />
+			Fecha de Fin: {grupo.fecha_fin}<br />
+			Estado ID: {grupo.status_id}<br />
+			Torneo ID: {grupo.torneo_id}
+		</li>
+	{/each}
+</ul>
+
+<h1>Jugadores</h1>
+<ul>
+	{#each jugadores as jugador}
+		<li>
+			<strong>{jugador.nombre} {jugador.apellido}</strong><br />
+			Cédula: {jugador.cedula}<br />
+			Fecha de Nacimiento: {jugador.fecha_nacimiento}<br />
+			Correo: {jugador.correo}<br />
+			Teléfono: {jugador.telefono}<br />
+			Equipo ID: {jugador.equipo_id}<br />
+			Género: {jugador.genero}
+		</li>
+	{/each}
+</ul>
+<br />
+
+<form method="POST" use:enhance>
+    <h2>Agregar Jugador</h2>
+
+    <label for="cedula">Cédula:</label>
+    <input type="text" id="cedula" name="cedula" bind:value={jugador.cedula} required />
+
+    <label for="nombre">Nombre:</label>
+    <input type="text" id="nombre" name="nombre" bind:value={jugador.nombre} required />
+
+    <label for="apellido">Apellido:</label>
+    <input type="text" id="apellido" name="apellido" bind:value={jugador.apellido} required />
+
+    <label for="fecha_nacimiento">Fecha de Nacimiento:</label>
+    <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" bind:value={jugador.fecha_nacimiento} required />
+
+    <label for="correo">Correo:</label>
+    <input type="email" id="correo" name="correo" bind:value={jugador.correo} required />
+
+    <label for="telefono">Teléfono:</label>
+    <input type="tel" id="telefono" name="telefono" bind:value={jugador.telefono} required />
+
+    <label for="equipo_id">Equipo ID:</label>
+    <input type="number" id="equipo_id" name="equipo_id" bind:value={jugador.equipo_id} required />
+
+    <label for="status_id">Status ID:</label>
+    <input type="number" id="status_id" name="status_id" bind:value={jugador.status_id} required />
+
+    <label for="genero">Género:</label>
+    <select id="genero" name="genero" bind:value={jugador.genero}>
+        <option value="M">Masculino</option>
+        <option value="F">Femenino</option>
+    </select>
+
+    <button type="submit">Agregar Jugador</button>
+</form>
+
+{#if form?.success}
+    <p>¡Jugador agregado correctamente!</p>
+{/if}
+
+{#if form?.error}
+    <p style="color: red;">{form?.error}</p>
+{/if}
+
+<style>
+	form {
+		max-width: 400px;
+		margin: 0 auto;
+		padding: 20px;
+		border: 1px solid #ccc;
+		border-radius: 8px;
+		background-color: #f9f9f9;
+	}
+	label {
+		display: block;
+		margin-bottom: 10px;
+	}
+	input,
+	select {
+		width: 100%;
+		padding: 8px;
+		margin-bottom: 15px;
+		border: 1px solid #ccc;
+		border-radius: 4px;
+	}
+	button {
+		width: 100%;
+		padding: 10px;
+		background-color: #007bff;
+		color: white;
+		border: none;
+		border-radius: 4px;
+		cursor: pointer;
+	}
+	button:hover {
+		background-color: #0056b3;
+	}
+</style>
