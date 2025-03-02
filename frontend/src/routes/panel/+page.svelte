@@ -3,7 +3,7 @@
 	const { torneos, grupos, jugadores, equipos } = data;
 	export let form;
 	import { enhance } from '$app/forms';
-	
+
 	let busquedaCedula = '';
 
 	// Función para filtrar jugadores por cédula
@@ -15,16 +15,17 @@
 	//	function abrirModalAgregar() {
 	//		// Lógica para abrir el modal
 	//	}
+
 	// Define el tipo Jugador
 	let isModalOpen = false;
 	function abrirModal() {
-        isModalOpen = true;
-    }
+		isModalOpen = true;
+	}
 
-    // Función para cerrar el modal
-    function cerrarModal() {
-        isModalOpen = false;
-    }
+	// Función para cerrar el modal
+	function cerrarModal() {
+		isModalOpen = false;
+	}
 	type Jugador = {
 		cedula: string;
 		nombre: string;
@@ -184,7 +185,19 @@
 	<!-- Botón Agregar -->
 	<div class="header-table">
 		<h2>
-			{#if tablaVisible === 'torneos'}
+			{#if tablaVisible === 'Home'}
+				<div class="home-container">
+					<div class="home-content">
+						<h3>BIENVENIDO ADMIN</h3>
+						<p>
+							Desde aquí puedes gestionar torneos, equipos, jugadores y grupos.<br /><b
+								>Utiliza el menú lateral para navegar.</b
+							>
+						</p>
+						<img class="home-logo" src="/logo-image.png" alt="logo" />
+					</div>
+				</div>
+			{:else if tablaVisible === 'torneos'}
 				Torneos
 			{:else if tablaVisible === 'equipos'}
 				Equipos
@@ -218,8 +231,10 @@
 						<td>{torneo.fecha_fin}</td>
 						<td>{torneo.ubicacion}</td>
 						<td>
-							<button>Modificar</button>
-							<button>Deshabilitar</button>
+							<div class="acciones">
+								<button>Modificar</button>
+								<button>Deshabilitar</button>
+							</div>
 						</td>
 					</tr>
 				{/each}
@@ -249,8 +264,10 @@
 						<td>{equipo.status_id}</td>
 						<td>{equipo.grupos_id}</td>
 						<td>
-							<button>Modificar</button>
-							<button>Deshabilitar</button>
+							<div class="acciones">
+								<button>Modificar</button>
+								<button>Deshabilitar</button>
+							</div>
 						</td>
 					</tr>
 				{/each}
@@ -291,8 +308,10 @@
 						<td>{jugador.genero}</td>
 						<td>{jugador.fecha_nacimiento}</td>
 						<td>
-							<button>Modificar</button>
-							<button>Deshabilitar</button>
+							<div class="acciones">
+								<button>Modificar</button>
+								<button>Deshabilitar</button>
+							</div>
 						</td>
 					</tr>
 				{/each}
@@ -317,13 +336,15 @@
 				{#each grupos as grupo}
 					<tr>
 						<td>{grupo.id}</td>
-						<td>{grupo.nombre}</td> 
+						<td>{grupo.nombre}</td>
 						<td>{grupo.fecha_inicio}</td>
 						<td>{grupo.fecha_fin}</td>
 						<td>{grupo.torneo_id}</td>
 						<td>
-							<button>Modificar</button>
-							<button>Deshabilitar</button>
+							<div class="acciones">
+								<button>Modificar</button>
+								<button>Deshabilitar</button>
+							</div>
 						</td>
 					</tr>
 				{/each}
@@ -398,50 +419,114 @@
 	</div>
 {/if}
 {#if isModalOpen}
-    <div class="modal-overlay">
-        <div class="modal">
-            <h2>Agregar Jugador</h2>
-            <form method="POST" use:enhance on:submit|preventDefault={agregarJugador}>
-                <label for="cedula">Cédula:</label>
-                <input type="text" id="cedula" name="cedula" bind:value={jugador.cedula} required />
+	<div class="modal-overlay">
+		<div class="modal">
+			<h2>Agregar Jugador</h2>
+			<form method="POST" use:enhance on:submit|preventDefault={agregarJugador}>
+				<label for="cedula">Cédula:</label>
+				<input type="text" id="cedula" name="cedula" bind:value={jugador.cedula} required />
 
-                <label for="nombre">Nombre:</label>
-                <input type="text" id="nombre" name="nombre" bind:value={jugador.nombre} required />
+				<label for="nombre">Nombre:</label>
+				<input type="text" id="nombre" name="nombre" bind:value={jugador.nombre} required />
 
-                <label for="apellido">Apellido:</label>
-                <input type="text" id="apellido" name="apellido" bind:value={jugador.apellido} required />
+				<label for="apellido">Apellido:</label>
+				<input type="text" id="apellido" name="apellido" bind:value={jugador.apellido} required />
 
-                <label for="fecha_nacimiento">Fecha de Nacimiento:</label>
-                <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" bind:value={jugador.fecha_nacimiento} required />
+				<label for="fecha_nacimiento">Fecha de Nacimiento:</label>
+				<input
+					type="date"
+					id="fecha_nacimiento"
+					name="fecha_nacimiento"
+					bind:value={jugador.fecha_nacimiento}
+					required
+				/>
 
-                <label for="correo">Correo:</label>
-                <input type="email" id="correo" name="correo" bind:value={jugador.correo} required />
+				<label for="correo">Correo:</label>
+				<input type="email" id="correo" name="correo" bind:value={jugador.correo} required />
 
-                <label for="telefono">Teléfono:</label>
-                <input type="tel" id="telefono" name="telefono" bind:value={jugador.telefono} required />
+				<label for="telefono">Teléfono:</label>
+				<input type="tel" id="telefono" name="telefono" bind:value={jugador.telefono} required />
 
-                <label for="equipo_id">Equipo ID:</label>
-                <input type="number" id="equipo_id" name="equipo_id" bind:value={jugador.equipo_id} required />
+				<label for="equipo_id">Equipo ID:</label>
+				<input
+					type="number"
+					id="equipo_id"
+					name="equipo_id"
+					bind:value={jugador.equipo_id}
+					required
+				/>
 
-                <label for="status_id">Status ID:</label>
-                <input type="number" id="status_id" name="status_id" bind:value={jugador.status_id} required />
+				<label for="status_id">Status ID:</label>
+				<input
+					type="number"
+					id="status_id"
+					name="status_id"
+					bind:value={jugador.status_id}
+					required
+				/>
 
-                <label for="genero">Género:</label>
-                <select id="genero" name="genero" bind:value={jugador.genero}>
-                    <option value="M">Masculino</option>
-                    <option value="F">Femenino</option>
-                </select>
+				<label for="genero">Género:</label>
+				<select id="genero" name="genero" bind:value={jugador.genero}>
+					<option value="M">Masculino</option>
+					<option value="F">Femenino</option>
+				</select>
 
-                <div class="modal-buttons">
-                    <button type="submit">Agregar</button>
-                    <button type="button" on:click={cerrarModal}>Cancelar</button>
-                </div>
-            </form>
-        </div>
-    </div>
+				<div class="modal-buttons">
+					<button type="submit">Agregar</button>
+					<button type="button" on:click={cerrarModal}>Cancelar</button>
+				</div>
+			</form>
+		</div>
+	</div>
 {/if}
 
 <style>
+	.home-container {
+		translate: 24%;
+		position: relative;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		min-height: 10vh; /* Ocupa toda la altura de la pantalla */
+		padding: 1px;
+		overflow: hidden;
+	}
+
+	/* Contenido principal */
+	.home-content {
+		position: relative;
+		text-align: center;
+		color: white;
+		max-width: 700px;
+		width: 100%; /* Asegura que el contenido no exceda el ancho máximo */
+		padding: 0.1rem; /* Espaciado interno */
+	}
+
+	/* Título */
+	.home-content h3 {
+		font-size: 1.9rem;
+		margin-bottom: 1rem;
+		color: var(--gold);
+		text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+	}
+
+	/* Párrafo */
+	.home-content p {
+		font-size: 1.2rem;
+		line-height: 1.6;
+		margin-bottom: 2rem;
+		color: rgb(200, 200, 200); /* Color gris claro para mejor legibilidad */
+		text-align: center; /* Asegura que el texto esté centrado */
+	}
+
+	/* Logo */
+	.home-logo {
+		display: block; /* Hace que el logo sea un bloque para poder centrarlo */
+		width: 350px;
+		height: 290px;
+		margin: 0 auto; /* Centra el logo horizontalmente */
+		filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.3));
+	}
 	.busqueda {
 		margin-bottom: 20px;
 	}
@@ -472,6 +557,7 @@
 		--modal-background: #1c2a3a;
 		--modal-border: #2c3e50;
 		--button-hover: #2c3e50;
+		--modal-color: #142130;
 	}
 	* {
 		margin: 0;
@@ -662,7 +748,7 @@
 		left: 0;
 		width: 100%;
 		height: 100%;
-		background-color: rgba(0, 0, 0, 0.5);
+		background-color: rgb(163, 45, 45);
 		display: flex;
 		justify-content: center;
 		align-items: center;
@@ -671,9 +757,10 @@
 	.modal {
 		background-color: var(--modal-background);
 		padding: 2rem;
+		color: white;
 		border-radius: 12px;
 		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-		text-align: center;
+		text-align: left;
 		width: 90%;
 		max-width: 500px;
 	}
@@ -681,6 +768,7 @@
 		color: white;
 		margin-bottom: 1.5rem;
 		font-size: 1.5rem;
+		text-align: center;
 	}
 	.modal input,
 	.modal select {
@@ -689,7 +777,7 @@
 		margin-bottom: 1rem;
 		border: 1px solid var(--modal-border);
 		border-radius: 6px;
-		background-color: #2c3e50;
+		background-color: rgba(132, 131, 142, 0.651);
 		color: white;
 		font-size: 1rem;
 	}
@@ -766,12 +854,13 @@
 	}
 	table {
 		width: 100%;
+		table-layout: auto;
 		border-collapse: collapse;
 		margin-bottom: 1rem; /* Menos separación entre tablas */
-		background-color: #142130;
+		background-color: #29333fe3;
 		border-radius: 8px;
 		overflow: hidden;
-		box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+		box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
 	}
 	table th,
 	table td {
@@ -788,8 +877,13 @@
 		background-color: #142130;
 		color: white;
 	}
+	/* botones modificar/ deshabilitar */
+	table td .acciones {
+		display: flex;
+		gap: 0.2rem;
+	}
 	table td button {
-		padding: 0.5rem 1rem;
+		padding: 0.4rem 0.6rem;
 		border: none;
 		border-radius: 4px;
 		cursor: pointer;
@@ -865,6 +959,10 @@
 		align-items: center;
 		margin-bottom: 1rem;
 	}
+	.header-table h2 {
+		font-size: 27px;
+		font-family: Arial, Helvetica, sans-serif;
+	}
 
 	.btn-agregar {
 		background-color: var(--green);
@@ -920,62 +1018,62 @@
 		font-family: Arial;
 	}
 	.modal-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        overflow-y: auto; /* Permite el desplazamiento vertical */
-        padding: 20px; /* Espacio alrededor del modal */
-    }
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background-color: rgba(0, 0, 0, 0.5);
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		overflow-y: auto; /* Permite el desplazamiento vertical */
+		padding: 20px; /* Espacio alrededor del modal */
+	}
+	/* fondo modal */
+	.modal {
+		background-color: var(--modal-color);
+		padding: 20px;
+		border-radius: 8px;
+		width: 100%;
+		max-width: 400px;
+		max-height: 90vh; /* Limita la altura del modal */
+		overflow-y: auto; /* Permite el desplazamiento dentro del modal */
+	}
 
-    .modal {
-        background-color: white;
-        padding: 20px;
-        border-radius: 8px;
-        width: 100%;
-        max-width: 400px;
-        max-height: 90vh; /* Limita la altura del modal */
-        overflow-y: auto; /* Permite el desplazamiento dentro del modal */
-    }
+	.modal h2 {
+		margin-bottom: 20px;
+	}
 
-    .modal h2 {
-        margin-bottom: 20px;
-    }
+	.modal-buttons {
+		display: flex;
+		gap: 10px;
+		margin-top: 20px;
+	}
 
-    .modal-buttons {
-        display: flex;
-        gap: 10px;
-        margin-top: 20px;
-    }
+	.modal-buttons button {
+		flex: 1;
+		padding: 10px;
+		border: none;
+		border-radius: 4px;
+		cursor: pointer;
+	}
 
-    .modal-buttons button {
-        flex: 1;
-        padding: 10px;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-    }
+	.modal-buttons button[type='submit'] {
+		background-color: var(--green);
+		color: white;
+	}
 
-    .modal-buttons button[type="submit"] {
-        background-color: #10c349;
-        color: white;
-    }
+	.modal-buttons button[type='submit']:hover {
+		background-color: #019a03;
+	}
 
-    .modal-buttons button[type="submit"]:hover {
-        background-color: #019a03;
-    }
+	.modal-buttons button[type='button'] {
+		background-color: #fa1414;
+		color: rgb(255, 255, 255);
+	}
 
-    .modal-buttons button[type="button"] {
-        background-color: #fa1414;
-        color: rgb(7, 4, 4);
-    }
-
-    .modal-buttons button[type="button"]:hover {
-        background-color: #dc3535;
-    }
+	.modal-buttons button[type='button']:hover {
+		background-color: #dc3535;
+	}
 </style>
