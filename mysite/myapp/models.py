@@ -58,8 +58,8 @@ class Torneo(models.Model):
 class Grupo(models.Model):
     id = models.AutoField(primary_key=True)
     nombre = models.CharField(max_length=100, null=False, blank=False)
-    fecha_inicio = models.DateTimeField(auto_now_add=True)
-    fecha_fin = models.DateTimeField(null=True, blank=True)
+    fecha_inicio = models.DateField(auto_now_add=True)
+    fecha_fin = models.DateField(null=True, blank=True)
     status_id = models.ForeignKey('Status', on_delete=models.CASCADE, db_column='status_id')
     torneo_id = models.ForeignKey('Torneo', on_delete=models.CASCADE, db_column='torneo_id')
     

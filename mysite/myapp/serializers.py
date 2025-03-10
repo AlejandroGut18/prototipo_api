@@ -18,6 +18,7 @@ class UsuarioSerializer(serializers.ModelSerializer):
             'id', 'cedula', 'nombre_usuario', 'password', 'correo',
             'fecha_creacion', 'fecha_ultima_sesion', 'status_id', 'rol_id'
         ]
+
         
                 
 class TorneoSerializer(serializers.ModelSerializer):
@@ -31,6 +32,7 @@ class TorneoSerializer(serializers.ModelSerializer):
             'ubicacion', 
             'status_id'
         ]
+        
         
 class GrupoSerializer(serializers.ModelSerializer):
     class Meta:
@@ -64,7 +66,7 @@ class EquipoSerializer(serializers.ModelSerializer):
             'delegado_equipo', 
             'grupo_id', 
             'status_id'
-        ]     
+        ]    
 
 class EstadisticasEquipoSerializer(serializers.ModelSerializer):
     class Meta:

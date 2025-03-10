@@ -1,4 +1,5 @@
 <script>
+  import { PUBLIC_API_URL } from '$env/static/public';
     let email = "";
     let password = "";
     let error = "";
@@ -10,7 +11,7 @@
     // Función para obtener los usuarios desde el backend
     async function obtenerUsuarios() {
       try {
-        const response = await fetch("http://localhost:8000/api/usuarios/", {
+        const response = await fetch(`${PUBLIC_API_URL}/api/usuarios/`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",

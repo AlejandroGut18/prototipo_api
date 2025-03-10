@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'myapp',
     'corsheaders',
+    'rest_framework_simplejwt',
     #'rest_framework.authtoken',
 ]
 
@@ -74,6 +75,12 @@ CORS_ALLOW_CREDENTIALS = True"""
 CSRF_TRUSTED_ORIGINS = [
    "http://localhost:5173",  # URL de frontend en SvelteKit
 ]
+
+#    REST_FRAMEWORK = {
+#       'DEFAULT_AUTHENTICATION_CLASSES':(
+#            'rest_framework_simplejwt.authentication.JWTAuthentication',
+#        )
+#    }
 
 
 CORS_ALLOW_ALL_ORIGINS = True

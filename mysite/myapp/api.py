@@ -4,22 +4,8 @@ from .serializers import *
 from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth import authenticate
-
-class LoginViewSet(viewsets.ViewSet):
-    def create(self, request):
-        correo = request.data.get('correo')
-        password = request.data.get('password')
-
-        # Autenticar al usuario
-        user = authenticate(request, email=correo, password=password)
-
-        if user is not None:
-            # Si el usuario es válido, redirige o devuelve un token
-            return Response({"message": "Login exitoso"}, status=status.HTTP_200_OK)
-        else:
-            return Response({"error": "Credenciales inválidas"}, status=status.HTTP_401_UNAUTHORIZED)
-        
-        
+#from rest_framework.permissions import IsAuthenticated
+               
 class StatusViewSet(viewsets.ModelViewSet):
     queryset = Status.objects.all()
     serializer_class = StatusSerializer

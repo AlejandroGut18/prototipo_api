@@ -1,23 +1,69 @@
-<script>
+<script lang="ts">
+    import { enhance } from '$app/forms';
+    //import { invalid, redirect } from '@sveltejs/kit';
+    //import { page } from '$app/stores';
+
     let name = '';
     let email = '';
     let password = '';
     let confirmPassword = '';
     let errorMessage = '';
 
-    const handleRegister = () => {
+    const handleSubmit = async (event: SubmitEvent) => {
+        event.preventDefault();
+
         if (password !== confirmPassword) {
             errorMessage = 'Las contraseñas no coinciden';
-            console.log(errorMessage);
+            return;
+        }
+
+        const formData = new FormData(event.target as HTMLFormElement);
+        const response = await fetch('/register', {
+            method: 'POST',
+            body: formData
+        });
+
+        if (response.ok) {
+            // Redirige al usuario después del registro exitoso
+            window.location.href = '/login';
         } else {
-            errorMessage = '';
-            console.log('Nombre:', name);
-            console.log('Email:', email);
-            console.log('Contraseña:', password);
+            const result = await response.json();
+            errorMessage = result.message || 'Error en el registro';
         }
     };
 </script>
-  <!-- #9b0127ee -->
+<main>
+    {#if errorMessage}
+        <div class="error-message">{errorMessage}</div>
+    {/if}
+    <div class="register-container">
+        <div class="register-form">
+            <h2>Crea tu cuenta</h2>
+            <form on:submit|preventDefault={handleSubmit} use:enhance>
+                <div class="form-group">
+                    <label for="name">Nombre</label>
+                    <input type="text" id="name" name="name" bind:value={name} required />
+                </div>
+                <div class="form-group">
+                    <label for="email">Correo Electrónico</label>
+                    <input type="email" id="email" name="email" bind:value={email} required />
+                </div>
+                <div class="form-group">
+                    <label for="password">Contraseña</label>
+                    <input type="password" id="password" name="password" bind:value={password} required />
+                </div>
+                <div class="form-group">
+                    <label for="confirmPassword">Confirmar Contraseña</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" bind:value={confirmPassword} required />
+                </div>
+                {#if errorMessage}
+                    <div class="error-message">{errorMessage}</div>
+                {/if}
+                <button type="submit">Registrarse</button>
+            </form>
+        </div>
+    </div>
+</main>
 <style>
     .register-container {
         display: flex;
@@ -114,29 +160,3 @@
     }
 </style>
 
-<div class="register-container">
-    <div class="register-form">
-        <h2>Crea tu cuenta</h2>
-        <div class="form-group">
-            <label for="name">Nombre</label>
-            <input type="text" id="name" bind:value={name} placeholder="Ingresa tu nombre" required />
-        </div>
-        <div class="form-group">
-            <label for="email">Correo Electrónico</label>
-            <input type="email" id="email" bind:value={email} placeholder="Ingresa tu correo electrónico" required />
-        </div>
-        <div class="form-group">
-            <label for="password">Contraseña</label>
-            <input type="password" id="password" bind:value={password} placeholder="Ingresa tu contraseña" required />
-        </div>
-        <div class="form-group">
-            <label for="confirmPassword">Confirmar Contraseña</label>
-            <input type="password" id="confirmPassword" bind:value={confirmPassword} placeholder="Repite tu contraseña" required />
-        </div>
-        <button class="register-button" on:click={handleRegister}>Registrarse</button>
-        <div class="login-link">
-            <p>¿Ya tienes una cuenta?</p>
-            <b><a href="/login">Inicia sesión aquí</a></b>
-        </div>
-    </div>
-</div>

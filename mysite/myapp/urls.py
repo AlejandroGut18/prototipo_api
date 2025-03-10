@@ -18,7 +18,7 @@ router.register('api/jugadores', JugadorViewSet)
 router.register('api/jugador-equipos', JugadorEquipoViewSet)
 router.register('api/partidos', PartidoViewSet)
 router.register('api/estadisticas-jugadores', EstadisticasJugadorViewSet)
-router.register('api/login', LoginViewSet, basename='login')  
+#router.register('api/login', LoginViewSet, basename='login')  
 
 urlpatterns = [
     

@@ -1,8 +1,27 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
+	import { writable } from 'svelte/store';
+	
+	import type { SubmitFunction } from '@sveltejs/kit';
+
+	import { Home, Table, Users, Trophy, UsersRound } from 'lucide-svelte';
 	export let data;
-	const { torneos, grupos, jugadores, equipos } = data;
-	export let form;
+	let { torneos, grupos, jugadores, equipos } =  data;
+	let form;
 	import { enhance } from '$app/forms';
+
+	let busquedaGeneral = '';  // Variable de búsqueda única
+
+    // Función genérica de filtrado
+    $: datosFiltrados = busquedaGeneral
+        ? (tablaVisible === 'jugadores' ? jugadores.filter(j => j.cedula.includes(busquedaGeneral)) :
+           tablaVisible === 'equipos' ? equipos.filter(e => String(e.id).includes(busquedaGeneral)) :
+           tablaVisible === 'torneos' ? torneos.filter(t => String(t.id).includes(busquedaGeneral)) :
+           tablaVisible === 'grupos' ? grupos.filter(g => String(g.id).includes(busquedaGeneral)) : [])
+        : (tablaVisible === 'jugadores' ? jugadores :
+           tablaVisible === 'equipos' ? equipos :
+           tablaVisible === 'torneos' ? torneos :
+           tablaVisible === 'grupos' ? grupos : []);
 
 	let busquedaCedula = '';
 
@@ -10,13 +29,26 @@
 	$: jugadoresFiltrados = busquedaCedula
 		? jugadores.filter((jugador) => jugador.cedula.includes(busquedaCedula))
 		: jugadores;
+	//
 
-	// Función para abrir el modal de agregar (puedes implementarla más adelante)
-	//	function abrirModalAgregar() {
-	//		// Lógica para abrir el modal
-	//	}
+	let isJugadorModalOpen = false;
+	let isEquipoModalOpen = false;
 
-	// Define el tipo Jugador
+	function abrirJugadorModal() {
+		isJugadorModalOpen = true;
+	}
+
+	function cerrarJugadorModal() {
+		isJugadorModalOpen = false;
+	}
+
+	function abrirEquipoModal() {
+		isEquipoModalOpen = true;
+	}
+
+	function cerrarEquipoModal() {
+		isEquipoModalOpen = false;
+	}
 	let isModalOpen = false;
 	function abrirModal() {
 		isModalOpen = true;
@@ -51,10 +83,24 @@
 		genero: 'M'
 	};
 
-	let isMenuOpen = false;
+	type Equipo = {
+		id: number;
+		nombre: string;
+		delegado_equipo: string;
+		grupo_id: number;
+		status_id: number;
+	};
+
+	let equipo: Equipo = {
+		id: 0,
+		nombre: '',
+		delegado_equipo: '',
+		grupo_id: 1,
+		status_id: 1
+	};
+
 	let isUserMenuOpen = false;
 	let showLogoutModal = false;
-	// Variable para controlar qué tabla se muestra
 	let tablaVisible: 'Home' | 'torneos' | 'equipos' | 'jugadores' | 'grupos' = 'Home';
 
 	// Funciones para mostrar la tabla correspondiente
@@ -86,15 +132,6 @@
 		} else if (tablaVisible === 'grupos') {
 		}
 	}
-	/*
-    async function deshabilitarEquipo(id: number) {
-        try {
-            await fetchAuth(`/api/equipos/${id}`, { method: 'DELETE' });
-        } catch (err) {
-            console.error('Failed to disable equipo', err);
-        }
-    }
-*/
 
 	let showEquipoModal = true;
 	let showJugadorModal = true;
@@ -104,10 +141,6 @@
 
 	function closeJugadorModal() {
 		showJugadorModal = false;
-	}
-
-	function toggleMenu() {
-		isMenuOpen = !isMenuOpen;
 	}
 
 	function toggleUserMenu() {
@@ -125,6 +158,27 @@
 	function cancelLogout() {
 		showLogoutModal = false;
 	}
+
+	let isMenuOpen = writable(true);
+	let isTorneoOpen = writable(false);
+
+	function toggleMenu() {
+		isMenuOpen.update((n) => !n);
+	}
+
+	function toggleTorneo() {
+		isTorneoOpen.update((n) => !n);
+	}
+	/**
+	 * @param {{ result: any; update: any; }} param0
+	 */
+	function handleEnhance({ result, update }: { result: any; update: any }) {
+        if (result?.success) {
+            cerrarJugadorModal(); // Cierra el modal si la respuesta es exitosa
+			cerrarEquipoModal();
+        }
+    }
+
 </script>
 
 <header>
@@ -166,13 +220,27 @@
 	</div>
 </header>
 
-<div class="sidebar {isMenuOpen ? 'open' : ''}">
+<div class="sidebar {$isMenuOpen ? 'open' : ''}">
+	<button class="toggle-btn" on:click={toggleMenu}>☰</button>
+
 	<ul>
-		<li><a href="#" on:click={mostrarHome}>Home</a></li>
-		<li><a href="#" on:click={mostrarTorneos}>Torneo</a></li>
-		<li><a href="#" on:click={mostrarEquipos}>Equipos</a></li>
-		<li><a href="#" on:click={mostrarJugadores}>Jugadores</a></li>
-		<li><a href="#" on:click={mostrarGrupos}>Grupos</a></li>
+		<li>
+			<a href="" on:click={mostrarHome}>
+				<Home size={24} /> <span>Home</span>
+			</a>
+		</li>
+
+		<li>
+			<a href="#" on:click={toggleTorneo}>
+				<Table size={24} /> <span>Tablas</span> ▼
+			</a>
+			<ul class="submenu {$isTorneoOpen ? 'open' : ''}">
+				<li><a href="" on:click={mostrarTorneos}><Trophy size={20} />Torneo</a></li>
+				<li><a href="" on:click={mostrarEquipos}><Users size={20} /> Equipos</a></li>
+				<li><a href="" on:click={mostrarJugadores}><UsersRound size={20} /> Jugadores</a></li>
+				<li><a href="" on:click={mostrarGrupos}><Trophy size={20} /> Grupos</a></li>
+			</ul>
+		</li>
 	</ul>
 </div>
 
@@ -182,7 +250,6 @@
 
 <!-- Contenido dinámico según la vista actual -->
 <div class="content">
-	<!-- Botón Agregar -->
 	<div class="header-table">
 		<h2>
 			{#if tablaVisible === 'Home'}
@@ -219,6 +286,7 @@
 					<th>Fecha Inicio</th>
 					<th>Fecha Fin</th>
 					<th>Ubicación</th>
+					<th>Status</th>
 					<th>Acciones</th>
 				</tr>
 			</thead>
@@ -230,10 +298,10 @@
 						<td>{torneo.fecha_inicio}</td>
 						<td>{torneo.fecha_fin}</td>
 						<td>{torneo.ubicacion}</td>
+						<td>{torneo.status_id}</td>
 						<td>
 							<div class="acciones">
 								<button>Modificar</button>
-								<button>Deshabilitar</button>
 							</div>
 						</td>
 					</tr>
@@ -262,18 +330,17 @@
 						<td>{equipo.nombre}</td>
 						<td>{equipo.delegado_equipo}</td>
 						<td>{equipo.status_id}</td>
-						<td>{equipo.grupos_id}</td>
+						<td>{equipo.grupo_id}</td>
 						<td>
 							<div class="acciones">
 								<button>Modificar</button>
-								<button>Deshabilitar</button>
 							</div>
 						</td>
 					</tr>
 				{/each}
 			</tbody>
 		</table>
-		<button class="btn-agregar" on:click={abrirModalAgregar}> Agregar </button>
+		<button class="btn-agregar" on:click={abrirEquipoModal}> Agregar </button>
 	{/if}
 
 	{#if tablaVisible === 'jugadores'}
@@ -310,14 +377,13 @@
 						<td>
 							<div class="acciones">
 								<button>Modificar</button>
-								<button>Deshabilitar</button>
 							</div>
 						</td>
 					</tr>
 				{/each}
 			</tbody>
 		</table>
-		<button class="btn-agregar" on:click={abrirModal}> Agregar </button>
+		<button class="btn-agregar" on:click={abrirJugadorModal}> Agregar </button>
 	{/if}
 
 	{#if tablaVisible === 'grupos'}
@@ -343,7 +409,6 @@
 						<td>
 							<div class="acciones">
 								<button>Modificar</button>
-								<button>Deshabilitar</button>
 							</div>
 						</td>
 					</tr>
@@ -354,59 +419,6 @@
 	{/if}
 </div>
 
-<!-- Modal para Agregar/Editar Equipo -->
-<!-- {#if showEquipoModal}
-    <div class="modal-overlay">
-        <div class="modal">
-            <h2>{equipoEditando ? 'Editar Equipo' : 'Agregar Equipo'}</h2>
-            <input type="text" bind:value={nombreEquipo} placeholder="Nombre del Equipo" />
-            <input type="text" bind:value={delegado} placeholder="Nombre del Delegado" />
-            <input type="tel" bind:value={telefonoDelegado} placeholder="Teléfono del Delegado" />
-            <select bind:value={statusId}>
-                <option value="">Selecciona un estado</option>
-                {#each status as s}
-                    <option value={s.id}>{s.nombre}</option>
-                {/each}
-            </select>
-            <div class="modal-buttons">
-                <button on:click={guardarEquipo}>{equipoEditando ? 'Guardar Cambios' : 'Agregar'}</button>
-                <button on:click={closeEquipoModal}>Cancelar</button>
-            </div>
-        </div>
-    </div>
-{/if} -->
-
-<!-- Modal para Agregar Jugador -->
-<!-- {#if showJugadorModal}
-    <div class="modal-overlay">
-        <div class="modal">
-            <h2>Agregar Jugador</h2>
-            <input type="text" bind:value={nombre} placeholder="Nombre" />
-            <input type="text" bind:value={apellido} placeholder="Apellido" />
-            <input type="date" bind:value={fechaNacimiento} placeholder="Fecha de Nacimiento" />
-            <input type="email" bind:value={correo} placeholder="Correo" />
-            <select bind:value={genero}>
-                <option value="">Selecciona un género</option>
-                <option value="M">Masculino</option>
-                <option value="F">Femenino</option>
-            </select>
-            <select bind:value={equipoId}>
-                <option value="">Selecciona un equipo</option>
-                {#each equipos as equipo}
-                    <option value={equipo.id}>{equipo.nombre}</option>
-                {/each}
-            </select>
-            <input type="text" bind:value={posicion} placeholder="Posición" />
-            <input type="file" bind:files={imagenJugador} />
-            <div class="modal-buttons">
-                <button on:click={guardarJugador}>Agregar</button>
-                <button on:click={closeJugadorModal}>Cancelar</button>
-            </div>
-        </div>
-    </div>
-{/if} -->
-
-<!-- Modal de confirmación para salir -->
 {#if showLogoutModal}
 	<div class="modal-overlay">
 		<div class="modal">
@@ -418,11 +430,11 @@
 		</div>
 	</div>
 {/if}
-{#if isModalOpen}
+{#if isJugadorModalOpen}
 	<div class="modal-overlay">
 		<div class="modal">
 			<h2>Agregar Jugador</h2>
-			<form method="POST" use:enhance on:submit|preventDefault={agregarJugador}>
+			<form method="POST" action="?/agregarJugador" use:enhance={cerrarJugadorModal}>				
 				<label for="cedula">Cédula:</label>
 				<input type="text" id="cedula" name="cedula" bind:value={jugador.cedula} required />
 
@@ -454,6 +466,8 @@
 					name="equipo_id"
 					bind:value={jugador.equipo_id}
 					required
+					min="1"  
+					max="2" 
 				/>
 
 				<label for="status_id">Status ID:</label>
@@ -462,6 +476,8 @@
 					id="status_id"
 					name="status_id"
 					bind:value={jugador.status_id}
+					min="1"  
+					max="2" 
 					required
 				/>
 
@@ -473,7 +489,52 @@
 
 				<div class="modal-buttons">
 					<button type="submit">Agregar</button>
-					<button type="button" on:click={cerrarModal}>Cancelar</button>
+					<button type="button" on:click={cerrarJugadorModal}>Cancelar</button>
+				</div>
+			</form>
+		</div>
+	</div>
+{/if}
+
+<!-- Modal de Equipo -->
+{#if isEquipoModalOpen}
+	<div class="modal-overlay">
+		<div class="modal">
+			<h2>Agregar Equipo</h2>
+            <form method="POST" action="?/agregarEquipo" use:enhance={handleEnhance}>
+				<label for="nombre">Nombre:</label>
+				<input type="text" id="nombre" name="nombre" bind:value={equipo.nombre} required />
+
+				<label for="delegado_equipo">Delegado:</label>
+				<input
+					type="number"
+					id="delegado_equipo"
+					name="delegado_equipo"
+					bind:value={equipo.delegado_equipo}
+					min="1"  
+					max="2" 
+					required
+				/>
+
+				<label for="grupo_id">Grupo:</label>
+				<input 
+					type="number" 
+					id="grupo_id" 
+					name="grupo_id" 	
+					bind:value={equipo.grupo_id}
+					min="1"  
+					max="2" 
+				required />
+
+				<label for="status_id">Status:</label>
+				<select id="status_id" name="status_id" bind:value={equipo.status_id}>
+					<option value="1">Activo</option>
+					<option value="2">Inactivo</option>
+				</select>
+
+				<div class="modal-buttons">
+					<button type="submit">Agregar</button>
+					<button type="button" on:click={cerrarEquipoModal}>Cancelar</button>
 				</div>
 			</form>
 		</div>
